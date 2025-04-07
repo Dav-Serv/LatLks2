@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Api\PayCallbackController;
+
 use App\Http\Controllers\Api\Admin\ {
     CategoryApiController,
     ProductApiController,
@@ -16,6 +19,8 @@ use App\Http\Controllers\Api\Auth\ {
 // Auth
 Route::post('user/register', [RegisterApiController::class, 'register'])->name('user.register');
 Route::post('user/login', [LoginApiController::class, 'login'])->name('user.login');
+
+Route::post('callback', PayCallbackController::class)->name('webhook.callback');
 
 Route::get('/user', function (Request $request) {
     return $request->user();

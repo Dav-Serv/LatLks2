@@ -13,23 +13,23 @@ return new class extends Migration
     {
         Schema::create('pay_gates', function (Blueprint $table) {
             $table->id();
-            $table->string('external_id');
-            $table->string('user_id');
-            $table->string('is_high');
-            $table->string('payment_method');
-            $table->string('status');
-            $table->string('merchant_name');
-            $table->integer('amount');
-            $table->integer('paid_amount');
-            $table->string('bank_code');
-            $table->string('paid_at');
-            $table->string('payer_email');
-            $table->text('description');
-            $table->integer('adjusted_received_amount');
-            $table->integer('fees_paid_amount');
-            $table->string('currency');
-            $table->string('payment_channel');
-            $table->string('payment_destination');
+            $table->string('external_id')->nullable()->default(null);
+            $table->string('user_id')->nullable()->default(null);
+            $table->string('is_high')->nullable()->default(null);
+            $table->string('payment_method')->nullable()->default(null);
+            $table->string('status')->nullable()->default(null);
+            $table->string('merchant_name')->nullable()->default(null);
+            $table->integer('amount')->nullable()->default(0);
+            $table->integer('paid_amount')->nullable()->default(0);
+            $table->string('bank_code')->nullable()->default(null);
+            $table->string('paid_at')->nullable()->default(null);
+            $table->string('payer_email')->nullable()->default(null);
+            $table->text('description')->nullable()->default(null);
+            $table->integer('adjusted_received_amount')->nullable()->default(0);
+            $table->integer('fees_paid_amount')->nullable()->default(0);
+            $table->string('currency')->nullable()->default(null);
+            $table->string('payment_channel')->nullable()->default(null);
+            $table->string('payment_destination')->nullable()->default(null);
             $table->timestamps();
         });
     }

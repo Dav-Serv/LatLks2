@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('telephone');
             $table->string('email');
             $table->dateTime('date');
+            $table->enum('status', ['Unpaid', 'Paid'])->default('Unpaid');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('table_id')->references('id')->on('tables');

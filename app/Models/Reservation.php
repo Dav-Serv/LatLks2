@@ -15,6 +15,7 @@ class Reservation extends Model
         'telephone',
         'email',
         'date',
+        'status',
     ];
 
     public function user() : BelongsTo {
@@ -27,7 +28,7 @@ class Reservation extends Model
 
     public function requestpay()
     {
-        return $this->hasMany(RequestPay::class);
+        return $this->hasOne(RequestPay::class, 'reservation_id');
     }
 }
 

@@ -66,8 +66,15 @@ const formatPrice = (price) => {
       <!-- <div class="invoice-total">
         <p>Total: {{ totalAmount | currency }}</p>
       </div> -->
-  
-      <button @click="createReservation">Print Invoice</button>
+      
+      <iframe v-if="models?.requestpay?.invoice_url" :src="models?.requestpay?.invoice_url" style="width:100%;height:500px;"></iframe>
+
+      <div v-if="models?.status == 'Unpaid'">
+        <button @click="createReservation">Pay</button>
+      </div>
+      <div v-if="models?.status == 'Paid'">
+        <button @click="createReservation">Print Invoice</button>
+      </div>
     </div>
   </template>
 

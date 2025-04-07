@@ -75,8 +75,7 @@ class ReservationUserController extends Controller
     }
 
     public function show($reservation){
-        $models = Reservation::with('user', 'table')->findOrFail($reservation);
-
+        $models = Reservation::with('user', 'table', 'requestpay')->findOrFail($reservation);
         return Inertia::render('Reservation/Show', [
             'models'        => $models,
         ]);
@@ -111,8 +110,10 @@ class ReservationUserController extends Controller
                 'description'                   => $data->description,
                 'expiry_date'                   => $data->expiry_date,
                 'invoice_url'                   => $data->invoice_url,
-                'reservation_id'                => $data->reservation_id,
+                'reservation_id'                => $reservation->id,
             ]);
+
+            return redirect()->route('reservations.show');
         }
     }
 }
