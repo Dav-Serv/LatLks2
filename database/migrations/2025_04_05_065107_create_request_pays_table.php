@@ -23,8 +23,13 @@ return new class extends Migration
             $table->string("description");
             $table->string("expiry_date");
             $table->string("invoice_url");
-            $table->unsignedBigInteger("reservation_id");
+            $table->unsignedBigInteger("reservation_id")->nullable(null);
+            $table->unsignedBigInteger("order_id")->nullable(null);
             $table->foreign("reservation_id")->references("id")->on("reservations");
+            $table->dropForeign(['order_id']); // Drop foreign key yang lama
+            $table->foreign('order_id')
+                  ->references('id')->on('orders')
+                  ->onDelete('cascade'); // Menambahkan cascade delete
             $table->timestamps("");
         });
     }
@@ -37,3 +42,9 @@ return new class extends Migration
         Schema::dropIfExists('request_pays');
     }
 };
+
+
+// ALTER TABLE request_pays
+// 	ADD CONSTRAINT request_pays_order_id_foreign
+//     FOREIGN KEY (order_id)
+//     REFERENCES orders(id);

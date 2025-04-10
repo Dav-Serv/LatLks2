@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ {
 };
 
 use App\Http\Controllers\User\ {
+    OrderUserController,
     ReservationUserController,
 };
 
@@ -54,5 +55,9 @@ Route::middleware([
     // User
     Route::resource('reservations', ReservationUserController::class);
     Route::post('reservations/reqpay/{reservation}', [ReservationUserController::class, 'reqPay'])->name('reservations.reqpay');
+    Route::post('reservations/finished/{reservation}', [ReservationUserController::class, 'finished'])->name('reservations.finished');
+    Route::resource('orders', OrderUserController::class);
+    Route::post('orders/reqpay/{order}', [OrderUserController::class, 'reqPay'])->name('orders.reqpay');
+    Route::post('orders/finished/{order}', [OrderUserController::class, 'finished'])->name('orders.finished');
     
 });

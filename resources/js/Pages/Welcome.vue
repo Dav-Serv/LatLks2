@@ -215,7 +215,7 @@ function handleImageError() {
                         </div> -->
                     </div>
 
-                    <h1 class="mt-8 text-2xl font-medium text-white text-center">
+                    <!-- <h1 class="mt-8 text-2xl font-medium text-white text-center">
                         <strong>Rekomendasi Menu Kami!</strong>
                     </h1>
                     <div class="grid-container bg-dark-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 p-6 lg:p-8">
@@ -246,7 +246,7 @@ function handleImageError() {
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                             </svg>
                         </a>
-                    </div>
+                    </div> -->
                 </main>
 
                 <footer class="py-16 text-center text-sm text-black dark:text-white/70">

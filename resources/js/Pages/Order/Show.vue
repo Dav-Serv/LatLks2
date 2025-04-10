@@ -19,9 +19,9 @@ const form_pay = useForm({
     _method: 'POST',
 });
 
-const createReservation = () => {
-    form_pay.post(route('reservations.reqpay', { reservation : props.models.id}), {
-        errorBag: 'createReservation',
+const createOrder = () => {
+    form_pay.post(route('orders.reqpay', { order : props.models.id}), {
+        errorBag: 'createOrder',
         preserveScroll: true,
         onSuccess: () => true,
     });
@@ -42,13 +42,13 @@ const formatPrice = (price) => {
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Reservation</h2>
         </template>
         <div class="invoice-container">
-          <ButtonLink :href="route('reservations.index')">Back</ButtonLink>
+          <ButtonLink :href="route('orders.index')">Back</ButtonLink>
           <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-4">
           <div class="invoice-header">
-            <h1>Invoice Reservation #{{ models.id }}</h1>
+            <h1>Invoice Order #{{ models.id }}</h1>
             <p>{{ models.created_at }}</p>
             <p>{{ models.name }}</p>
-            <p>{{ models.email }} | {{ models.telephone }}</p>
+            <p>{{ models.user?.email }}</p>
           </div>
       
           <div class="invoice-items">
@@ -56,16 +56,22 @@ const formatPrice = (price) => {
               <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:text-gray-400">
                 <tr>
                   <th>Name Table</th>
-                  <th>Price</th>
                   <th>Guests</th>
+                  <th>Name Product</th>
+                  <th>Price</th>
+                  <th>Count</th>
+                  <th>Subtotal</th>
                   <th>Date</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>{{ models.table?.name }}</td>
-                  <td>{{ formatPrice(models.table?.price) }}</td>
                   <td>{{ models.guests }}</td>
+                  <td>{{ models.product?.name }}</td>
+                  <td>{{ formatPrice(models.product?.price) }}</td>
+                  <td>{{ models.count }}</td>
+                  <td>{{ formatPrice(models.subtotal) }}</td>
                   <td>{{ models.date }}</td>
                 </tr>
               </tbody>
@@ -78,7 +84,7 @@ const formatPrice = (price) => {
           <div>
             <iframe v-if="models?.requestpay?.invoice_url" :src="models?.requestpay?.invoice_url" style="width:100%;height:500px;"></iframe>
             <div v-if="models?.status_pay == 'Unpaid'">
-              <button @click="createReservation">Pay</button>
+              <button @click="createOrder">Pay</button>
             </div>
             <div v-if="models?.status_pay == 'Paid'">
               <button @click="PrintInvoice">Print Invoice</button>

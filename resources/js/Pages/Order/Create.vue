@@ -10,6 +10,7 @@ import '@vuepic/vue-datepicker/dist/main.css';
 
 const tab1 = ref(true);
 const tab2 = ref(false);
+const tab3 = ref(false);
 
 const props = defineProps({
     title: String,
@@ -17,6 +18,7 @@ const props = defineProps({
     form_type: String,
     model: Object,
     tables: Array,
+    products: Array,
     level:{
         type: String,
         default: 'user',
@@ -26,12 +28,10 @@ const props = defineProps({
 const form = useForm({
     _method: props.form_type,
     name: props.model?.name,
-    email: props.model?.email,
-    telephone: props.model?.telephone,
-    guests: props.model?.guests,
-    date: props.model?.date,
     table_id: props.model?.table_id,
-    payment_id: props.model?.payment_id,
+    guests: props.model?.guests,
+    product_id: props.model?.table_id,
+    count: props.model?.count,
 });
 
 const createReservation = () => {
@@ -65,8 +65,9 @@ onMounted(() => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <ButtonLink :href="route('reservations.index')">Back</ButtonLink>
+                <ButtonLink :href="route('orders.index')">Back</ButtonLink>
                 <form @submit.prevent="createReservation" class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 mt-4">
+                    <div  v-if="tab1" class="mb-7">
                         <div class="mb-4">
                             <label class="block font-medium text-sm text-gray-700">Name </label>
                             <input
@@ -77,64 +78,79 @@ onMounted(() => {
                             />
                             <p class="text-sm text-red-600" v-if="form.errors.name" v-html="form.errors.name" />
                         </div>
+                        <ButtonLink type="submit" color="blue" @click="tab1 = false; tab2 = true; tab3 = false;">
+                            Next >>
+                        </ButtonLink>
+                    </div>
+
+                    <div  v-if="tab2" class="mb-7">
                         <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">Email </label>
-                            <input
-                                id="email"
-                                v-model="form.email"
-                                type="email"
-                                class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full"
-                            />
-                            <p class="text-sm text-red-600" v-if="form.errors.email" v-html="form.errors.email" />
-                        </div>
-                        <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">Telephone </label>
-                            <input
-                                id="telephone"
-                                v-model="form.telephone"
-                                type="text"
-                                class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full"
-                            />
-                            <p class="text-sm text-red-600" v-if="form.errors.telephone" v-html="form.errors.telephone" />
+                            <label class="block font-medium text-sm text-gray-700">Table </label>
+                            <select v-model="form.table_id" id="table" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full">
+                                <option value="" disabled>Pilih Table</option>
+                                <option v-for="item in tables" :key="item.id" :value="item.id">
+                                    Name : {{ item.name }}, Limit : {{ item.limit }}
+                                </option>
+                            </select>
+                            <p class="text-sm text-red-600" v-if="form.errors.table_id" v-html="form.errors.table_id" />
                         </div>
                         <div class="mb-4">
                             <label class="block font-medium text-sm text-gray-700">Guests </label>
                             <input
                                 id="guests"
                                 v-model="form.guests"
-                                type="number"
+                                type="text"
                                 class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full"
                             />
                             <p class="text-sm text-red-600" v-if="form.errors.guests" v-html="form.errors.guests" />
                         </div>
-
-                    <div class="mb-7" >
-                        <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">Date </label>
-                            <VueDatePicker  id="date" type="datetime" v-model="form.date" />
-                            <p class="text-sm text-red-600" v-if="form.errors.date" v-html="form.errors.date" />
-                        </div>
-                        <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">Table </label>
-                            <select v-model="form.table_id" id="table" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full">
-                                <option value="" disabled>Pilih Table</option>
-                                <option v-for="item in tables" :key="item.id" :value="item.id">
-                                   Name : {{ item.name }}, Price : {{ formatPrice(item.price) }}, Limit : {{ item.limit }}
-                                </option>
-                            </select>
-                            <p class="text-sm text-red-600" v-if="form.errors.table_id" v-html="form.errors.table_id" />
-                        </div>
+                        <ButtonLink class="mr-3" type="button" color="blue" @click="tab1 = true; tab2 = false; tab3 = false;">
+                            << Back
+                        </ButtonLink>
+                        <ButtonLink type="submit" color="blue" @click="tab1 = false; tab2 = false; tab3 = true;">
+                            Next >>
+                        </ButtonLink>
                     </div>
 
-                    <div>
+                    <div  v-if="tab3" class="mb-7">
+                        <div class="mb-4">
+                            <label class="block font-medium text-sm text-gray-700">Product </label>
+                            <select v-model="form.product_id" id="product" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full">
+                                <option value="" disabled>Pilih Product</option>
+                                <option v-for="item in products" :key="item.id" :value="item.id">
+                                    Name : {{ item.name }}, Price : {{ formatPrice(item.price) }}, Stock : {{ item.stock }}
+                                </option>
+                            </select>
+                            <p class="text-sm text-red-600" v-if="form.errors.product_id" v-html="form.errors.product_id" />
+                        </div>
+                        <div class="mb-4">
+                            <label class="block font-medium text-sm text-gray-700">Count </label>
+                            <input
+                                id="count"
+                                v-model="form.count"
+                                type="text"
+                                class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full"
+                            />
+                            <p class="text-sm text-red-600" v-if="form.errors.count" v-html="form.errors.count" />
+                        </div>
+
+                        <div>
+
                         <ActionMessage :on="form.recentlySuccessful" class="me-3">
                             Saved.
                         </ActionMessage>
+
+                        <ButtonLink class="mr-3" type="button" color="blue" @click="tab1 = false; tab2 = true; tab3 = false;">
+                            << Back
+                        </ButtonLink>
 
                         <ButtonLink :class="{ 'opacity-25': form.processing }" :disabled="form.processing" type="submit" color="blue">
                             Save
                         </ButtonLink>
                     </div>
+                    </div>
+
+                    
                 </form>
             </div>
         </div>

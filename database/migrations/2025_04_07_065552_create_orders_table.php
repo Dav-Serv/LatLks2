@@ -11,20 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reservations', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('table_id');
+            $table->unsignedBigInteger('product_id');
             $table->string('name');
             $table->integer('guests');
-            $table->string('telephone');
-            $table->string('email');
-            $table->dateTime('date');
+            $table->integer('count');
+            $table->integer('subtotal');
+            $table->timestamp('date');
             $table->enum('status_pay', ['Unpaid', 'Paid'])->default('Unpaid');
-            $table->enum('status_reser', ['Unfinished', 'Finished'])->default('Unfinished');
-            $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('table_id')->references('id')->on('tables');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->timestamps();
         });
     }
 
@@ -33,9 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reservations');
+        Schema::dropIfExists('orders');
     }
 };
-
-
-

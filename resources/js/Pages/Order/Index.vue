@@ -11,7 +11,7 @@ const props = defineProps({
         type: Object,
         default: {}
     },
-    reser: {
+    order: {
         type: Object,
         default: {}
     },
@@ -21,13 +21,12 @@ const props = defineProps({
     }
 });
 
-// untuk delete
-const form1 = useForm({_method: "DELETE"});
+const form = useForm({_method: "DELETE"});
 
-const deleteReservation = (id) => {
-    if (confirm('Are you sure you want to delete this reservation?')) {
-        form1.post(route('reservations.destroy', id), {
-            errorBag: 'deleteReservation',
+const deleteOrder = (id) => {
+    if (confirm('Are you sure you want to delete this order?')) {
+        form.post(route('orders.destroy', id), {
+            errorBag: 'deleteOrder',
             preserveScroll: true,
         });
     }
@@ -36,19 +35,14 @@ const deleteReservation = (id) => {
 // untuk selesai
 const form2 = useForm({_method: "POST"});
 
-const finishedReservation = (id) => {
-    if (confirm('Are you sure you want to finished this reservation?')) {
-        form2.post(route('reservations.finished', id), {
-            errorBag: 'finishedReservation',
+const finishedOrder = (id) => {
+    if (confirm('Are you sure you want to finished this order?')) {
+        form2.post(route('orders.finished', id), {
+            errorBag: 'finishedOrder',
             preserveScroll: true,
         });
     }
 }
-
-// Computed property untuk menentukan visibilitas tombol "Finished"
-const isFinishedButtonVisible = () => {
-    return models.table?.status === 'inactive' && models.status_reser === 'Unfinished';
-};
 
 // Fungsi untuk memformat harga
 const formatPrice = (price) => {
@@ -60,14 +54,14 @@ const formatPrice = (price) => {
 </script>
 
 <template>
-    <AppLayout title="Reservation">
+    <AppLayout title="Order">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Reservation</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Order</h2>
         </template>
 
         <div class="py-12">
             <div class="container mx-auto sm:px-6 lg:px-8">
-                <ButtonLink :href="route('reservations.create')">Add Reservation</ButtonLink>
+                <ButtonLink :href="route('orders.create')">Add Order</ButtonLink>
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-4">
                     <div class="relative overflow-x-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500">
@@ -75,16 +69,16 @@ const formatPrice = (price) => {
                                 <tr>
                                     <th scope="col" class="px-6 py-3">Id</th>
                                     <th scope="col" class="px-6 py-3">Name User</th>
-                                    <th scope="col" class="px-6 py-3" >Name Buyer</th>
-                                    <th scope="col" class="px-6 py-3">Email</th>
-                                    <th scope="col" class="px-6 py-3">Telephone</th>
-                                    <th scope="col" class="px-6 py-3">Guests</th>
-                                    <th scope="col" class="px-6 py-3">Date</th>
+                                    <th scope="col" class="px-6 py-3">Name Buyer</th>
                                     <th scope="col" class="px-6 py-3">Table</th>
-                                    <th scope="col" class="px-6 py-3">Dp</th>
+                                    <th scope="col" class="px-6 py-3">Guests</th>
+                                    <th scope="col" class="px-6 py-3">Product</th>
+                                    <th scope="col" class="px-6 py-3">Count</th>
+                                    <th scope="col" class="px-6 py-3">Subtotal</th>
+                                    <th scope="col" class="px-6 py-3">Date</th>
                                     <th scope="col" class="px-6 py-3">Payment</th>
                                     <th scope="col" class="px-6 py-3">Status</th>
-                                    <th scope="col" class="px-6 py-3">Opsi</th>
+                                    <th scope="col" class="px-6 py-3" width="10%">Opsi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -92,12 +86,12 @@ const formatPrice = (price) => {
                                     <td class="px-6 py-4">{{ item.id }}</td>
                                     <td class="px-6 py-4">{{ item.user?.name }}</td>
                                     <td class="px-6 py-4">{{ item.name }}</td>
-                                    <td class="px-6 py-4">{{ item.email }}</td>
-                                    <td class="px-6 py-4">{{ item.telephone }}</td>
-                                    <td class="px-6 py-4">{{ item.guests }}</td>
-                                    <td class="px-6 py-4">{{ item.date }}</td>
                                     <td class="px-6 py-4">{{ item.table?.name }}</td>
-                                    <td class="px-6 py-4">{{ formatPrice(item.table?.price) }}</td>
+                                    <td class="px-6 py-4">{{ item.guests }}</td>
+                                    <td class="px-6 py-4">{{ item.product?.name }}</td>
+                                    <td class="px-6 py-4">{{ item.count }}</td>
+                                    <td class="px-6 py-4">{{ formatPrice(item.subtotal) }}</td>
+                                    <td class="px-6 py-4">{{ item.date }}</td>
                                     <td class="px-6 py-4">{{ item.payGate }}</td>
                                     <Green v-if="item.status_pay == 'Paid'">
                                         <td class="px-6 py-4">{{ item.status_pay }}</td>
@@ -106,10 +100,10 @@ const formatPrice = (price) => {
                                         <td class="px-6 py-4">{{ item.status_pay }}</td>
                                     </Red>
                                     <td class="px-6 py-4">
-                                        <ButtonLink :href="route('reservations.show', item.id)" color="yellow" class="mb-2">Detail</ButtonLink>&nbsp;
-                                        <ButtonLink v-if="item.status_reser == 'Unfinished' && item.table?.status == 'inactive' && item.status_pay == 'Paid'"  @click="finishedReservation(item.id)" color="blue" class="mb-2">Finished</ButtonLink>&nbsp;
-                                        <ButtonLink v-if="item.status_pay == 'Unpaid'" :href="route('reservations.edit', item.id)" color="blue" class="mb-2">Edit</ButtonLink>&nbsp;
-                                        <ButtonLink v-if="item.status_pay == 'Unpaid'" @click="deleteReservation(item.id)" color="red" class="mb-2">Delete</ButtonLink>
+                                        <ButtonLink :href="route('orders.show', item.id)" color="yellow" class="mb-2">Detail</ButtonLink>&nbsp;
+                                        <ButtonLink v-if="item.status_order == 'Unfinished' && item.table?.status == 'inactive' && item.status_pay == 'Paid'"  @click="finishedOrder(item.id)" color="blue" class="mb-2">Finished</ButtonLink>&nbsp;
+                                        <ButtonLink v-if="item.status_pay == 'Unpaid'" :href="route('orders.edit', item.id)" color="blue" class="mb-2">Edit</ButtonLink>&nbsp;
+                                        <ButtonLink v-if="item.status_pay == 'Unpaid'" @click="deleteOrder(item.id)" color="red" class="mb-2">Delete</ButtonLink>
                                     </td>
                                 </tr>
                             </tbody>

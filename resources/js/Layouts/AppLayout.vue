@@ -70,19 +70,19 @@ const logout = () => {
                                     <NavLink :href="route('products.index')" :active="route().current('products.*')">
                                         Product
                                     </NavLink>
-                                    <!-- <NavLink :href="route('payments.index')" :active="route().current('payments.*')">
-                                        Payment
-                                    </NavLink> -->
                                     <NavLink :href="route('reservations.index')" :active="route().current('reservations.*')">
                                         <ButtonLink :href="route('reservations.index')" >Reservation</ButtonLink>
                                     </NavLink>
-                                    <NavLink :href="route('products.index')" :active="route().current('menus.*')">
-                                        <ButtonLink>Menu</ButtonLink>
+                                    <NavLink :href="route('orders.index')" :active="route().current('orders.*')">
+                                        <ButtonLink :href="route('orders.index')">Order</ButtonLink>
                                     </NavLink>
                                 </template>
                                 <template v-if="usePage().props?.level == 'user'">
                                     <NavLink :href="route('reservations.index')" :active="route().current('reservations.*')">
                                         <ButtonLink :href="route('reservations.index')" >Reservation</ButtonLink>
+                                    </NavLink>
+                                    <NavLink :href="route('orders.index')" :active="route().current('orders.*')">
+                                        <ButtonLink :href="route('orders.index')">Order</ButtonLink>
                                     </NavLink>
                                 </template>
                             </div>
@@ -245,16 +245,19 @@ const logout = () => {
                         <ResponsiveNavLink :href="route('products.index')" :active="route().current('products.*')">
                             Product
                         </ResponsiveNavLink>
-                        <!-- <ResponsiveNavLink :href="route('payments.index')" :active="route().current('payments.*')">
-                            Payment
-                        </ResponsiveNavLink> -->
+                        <ResponsiveNavLink :href="route('reservations.index')" :active="route().current('reservations.*')">
+                            <ButtonLink :href="route('reservations.index')">Reservation</ButtonLink>
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('orders.index')" :active="route().current('orders.*')">
+                            <ButtonLink :href="route('orders.index')">Order</ButtonLink>
+                        </ResponsiveNavLink>
                     </div>
                     <div v-if="usePage().props?.level == 'user' || usePage().props?.level == 'admin' " class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('reservations.index')" :active="route().current('reservations.*')">
-                            <ButtonLink>Reservation</ButtonLink>
+                            <ButtonLink :href="route('reservations.index')">Reservation</ButtonLink>
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('reservations.index')" :active="route().current('reservations.*')">
-                            <ButtonLink>Menu</ButtonLink>
+                        <ResponsiveNavLink :href="route('orders.index')" :active="route().current('orders.*')">
+                            <ButtonLink :href="route('orders.index')">Order</ButtonLink>
                         </ResponsiveNavLink>
                     </div>
 

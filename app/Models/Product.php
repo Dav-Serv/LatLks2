@@ -16,7 +16,15 @@ class Product extends Model
         'price',
     ];
 
+    protected $appends = [
+        'imageAt'
+    ];
+
     public function category() : BelongsTo {
         return $this->belongsTo(Category::class, 'category_id', );
+    }
+
+    public function getImageAtAttribute() {
+        return asset("storage/{$this->image}?") . time();
     }
 }

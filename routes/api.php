@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\PayCallbackController;
+usE App\Http\Controllers\Api\MenuApiController;
 
 use App\Http\Controllers\Api\Admin\ {
     CategoryApiController,
@@ -15,6 +16,7 @@ use App\Http\Controllers\Api\Auth\ {
     LogOutApiController,
     RegisterApiController,
 };
+use App\Models\User;
 
 // Auth
 Route::post('user/register', [RegisterApiController::class, 'register'])->name('user.register');
@@ -30,6 +32,9 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('/tables', TableApiController::class);
 Route::apiResource('/categories', CategoryApiController::class);
 Route::apiResource('/products', ProductApiController::class);
+
+// User
+Route::apiResource('/menus', MenuApiController::class);
 
 // LogOut
 Route::middleware('auth:sanctum')->prefix('user')->group(function() {

@@ -15,7 +15,13 @@ class Reservation extends Model
         'telephone',
         'email',
         'date',
-        'status',
+        'status_pay',
+        'status_reser',
+    ];
+
+    protected $appends = [
+        'payGate',
+        'dava'
     ];
 
     public function user() : BelongsTo {
@@ -29,6 +35,26 @@ class Reservation extends Model
     public function requestpay()
     {
         return $this->hasOne(RequestPay::class, 'reservation_id');
+    }
+
+    public function getPayGateAttribute() {
+        try {
+            if($this->requestpay->external_id) {
+                if($pg = PayGate::where('external_id', $this->requestpay->external_id)->first()) {
+                    return $pg->payment_channel;
+                }
+            }
+        } catch (\Exception $e) {
+            return "";
+        }
+    }
+
+    public function getDavaAttribute() {
+        try {
+            return "Dava XII";
+        } catch (\Exception $e) {
+            return "Dava";
+        }
     }
 }
 

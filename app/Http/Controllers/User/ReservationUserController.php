@@ -20,7 +20,7 @@ class ReservationUserController extends Controller
         }
 
         $models = Reservation::with('user', 'table')->paginate(5);
-
+        
         if(Auth::user()->level == 'user'){
             $reser = Reservation::with('user', 'table')->where('user_id', Auth::user()->id)->paginate(5);
         }
@@ -36,7 +36,7 @@ class ReservationUserController extends Controller
             abort(401); 
         }
 
-        $tables = Table::all();
+        $tables = Table::where('status', 'active')->get();
         return Inertia::render('Reservation/Create', [
             'level'         => Auth::user()->level,
             'tables'        => $tables,
@@ -47,18 +47,25 @@ class ReservationUserController extends Controller
         ]);
     }
 
-    public function store(Request $request){
+    public function store(Request $request, Table $table){
         $request->validate([
             'name'          => 'required|string:255',
             'email'         => 'required|email',
             'telephone'     => 'required',
-            'guests'        => 'required|numeric',
+            'guests'        => 'required|integer',
             'date'          => 'required',
             'table_id'      => 'required|exists:tables,id',
         ]);
+        if('guests' < $table->limit){
+            $request->validate([
+                'guests' => 'not recomended'
+            ]);
+        }
         $request->merge([
             'date' => Carbon::parse($request->input('date'))->setTimezone("Asia/Jakarta")->format('Y-m-d H:i:s')
         ]);
+
+        
         
         // dd($request->all());
         Reservation::create([
@@ -74,6 +81,54 @@ class ReservationUserController extends Controller
         return redirect()->route('reservations.index');         
     }
 
+    public function edit(Reservation $reservation){
+        if (!in_array(Auth::user()->level, ['admin', 'user'])) {
+            abort(401); 
+        }
+
+        $tables = Table::all();
+        return Inertia::render('Reservation/Create', [
+            'level'         => Auth::user()->level,
+            'tables'        => $tables,
+            'form_type'     => 'PUT',
+            'title'         => 'Edit Reservation',
+            'model'         => $reservation,
+            'route_url'     => route('reservations.update', $reservation->id),
+        ]);
+    }
+
+    public function update(Request $request, Reservation $reservation){
+        $request->validate([
+            'name'          => 'required|string:255',
+            'email'         => 'required|email',
+            'telephone'     => 'required',
+            'guests'        => 'required|integer',
+            'date'          => 'required',
+            'table_id'      => 'required|exists:tables,id',
+        ]);
+        $request->merge([
+            'date' => Carbon::parse($request->input('date'))->setTimezone("Asia/Jakarta")->format('Y-m-d H:i:s')
+        ]);
+
+        $reservation->update([
+            'user_id'       => Auth::user()->id,
+            'name'          => $request->name,
+            'email'         => $request->email,
+            'telephone'     => $request->telephone,
+            'guests'        => $request->guests,
+            'date'          => $request->date,
+            'table_id'      => $request->table_id,
+        ]);
+
+        return redirect()->route('reservations.index');
+    }
+
+    public function destroy(Reservation $reservation){
+        $reservation->delete();
+
+        return redirect()->route('reservations.index');
+    }
+
     public function show($reservation){
         $models = Reservation::with('user', 'table', 'requestpay')->findOrFail($reservation);
         return Inertia::render('Reservation/Show', [
@@ -82,9 +137,11 @@ class ReservationUserController extends Controller
     }
 
     public function reqPay(Request $request, Reservation $reservation) {
+        
         $key = env("XENDIT", "");
         $reservation->load(['table']);
         // dd($key, $reservation);
+
         $response = Http::withBasicAuth($key, '')
             ->post("https://api.xendit.co/v2/invoices", [
                 "external_id"   => "invoice-{$reservation->id}",
@@ -113,7 +170,29 @@ class ReservationUserController extends Controller
                 'reservation_id'                => $reservation->id,
             ]);
 
-            return redirect()->route('reservations.show');
+            if($table = Table::find($reservation->table_id)) {
+                // dd($table->status);
+                $table->status = 'inactive';
+                $table->save();
+                // dd($table);
+            }
+
+            return redirect()->route('reservations.show', $reservation->id);
+        } else {
+            dd($response->object());
         }
+    }
+
+    public function finished(Reservation $reservation){
+        if($table = Table::find($reservation->table_id)) {
+            // dd($table->status);
+            $table->status = 'active';
+            $table->save();
+            // dd($table);
+        }
+
+        $reser = Reservation::find($reservation->id);
+        $reser->status_reser = 'Finished';
+        $reser->save();
     }
 }

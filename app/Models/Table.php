@@ -18,5 +18,10 @@ class table extends Model
     {
         return $this->hasMany(Reservation::class);
     }
+
+    public function order()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
 ?>
